@@ -22,8 +22,8 @@ var addEventHandler = function(table, ths) {
             ths[thIndex].onclick = (function(thIndex) {
                 return function() {
                     sort(table, thIndex);
-                    // changeButtonStyle(table, thIndex);
-                    // makeTableAlternate(table);
+                    changeButtonStyle(table, thIndex);
+                    makeTableAlternate(table);
                 };
             })(thIndex);
         }
@@ -33,10 +33,6 @@ var addEventHandler = function(table, ths) {
 var sort = function(table, thIndex) {
     var sortedOrder = sortByStringAndGetOrder(table, thIndex);
     changeTableOrder(table, sortedOrder);
-};
-
-var ascend = function(table, thIndex) {
-    return table.getElementsByTagName('th')[thIndex].className === 'ascend';
 };
 
 var sortByStringAndGetOrder = function(table, thIndex) {
@@ -81,5 +77,39 @@ var changeTableOrder = function(table, sortedOrder) {
         tbody.appendChild(trs[sortedOrder[index]].cloneNode(true));
     }
     table.replaceChild(tbody, table.getElementsByTagName('tbody')[0]);
+};
+
+var changeButtonStyle = function(table, thIndex) {
+    var ths = table.getElementsByTagName('th');
+    for (i in ths) {
+        if (!isNaN(i) && i !== thIndex) {
+            ths[i].className = "";
+        }
+    }
+    if (ascend(ths[thIndex])) {
+        ths[thIndex].className = 'descend';
+    } else {
+        ths[thIndex].className = 'ascend';
+    }
+};
+
+var ascend = function(th) {
+    return th.className === 'ascend';
+};
+
+var makeTableAlternate = function(table) {
+    var trs = table.getElementsByTagName('tr');
+    var alternate = false;
+    for (var trIndex in trs) {
+        if (!isNaN(trIndex) && trIndex !== "0") {
+            if (alternate) {
+                trs[trIndex].className = "alternate";
+                alternate = false;
+            } else {
+                trs[trIndex].className = "";
+                alternate = true;
+            }
+        }
+    }
 };
 

@@ -81,7 +81,7 @@ var changeTableOrder = function(table, sortedOrder) {
 
 var changeButtonStyle = function(table, thIndex) {
     var ths = table.getElementsByTagName('th');
-    for (i in ths) {
+    for (var i in ths) {
         if (!isNaN(i) && i !== thIndex) {
             ths[i].className = "";
         }

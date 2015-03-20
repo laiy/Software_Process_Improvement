@@ -62,3 +62,4 @@ otherExample = new Derived('other-example');
 Derived.staticMethod();
 example.instanceMethod();
 otherExample.instanceMethod();
+

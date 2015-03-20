@@ -1,5 +1,5 @@
 /*
- * how to run: node Object.js
+ * how to run: node inheritance.js
  */
 
 var Base = function(instanceVariable) {
@@ -24,16 +24,28 @@ var extend = function(base, derived) {
     };
     Derived.staticVariable = 'Derived';
     Derived.staticMethod = function() {
-        base.staticMethod.call(this);
         console.log("This is from Derived class static-method, static-variable is: " + this.staticVariable);
     };
     Derived.prototype = {
         instanceMethod: function() {
-            base.prototype.instanceMethod.call(this);
             console.log("This is from Derived class instance-method, instance-variable is: " + this.instanceVariable);
         }
     };
+    combineFunction(Derived.prototype, base.prototype);
+    combineFunction(Derived, base);
     derived = Derived;
+};
+
+var combineFunction = function(derived, base) {
+    for (var key in base) {
+        if (typeof(base[key]) === 'function' && typeof(derived[key]) === 'function') {
+            var derivedFn = derived[key];
+            derived[key] = function() {
+                base[key].apply(this, arguments);
+                derivedFn.apply(this, arguments);
+            }
+        }
+    }
 };
 
 var Derived;

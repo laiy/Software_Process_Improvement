@@ -43,3 +43,10 @@ example = new Derived('example');
 Derived.staticMethod();
 example.instanceMethod();
 
+console.log('=========================================');
+
+example = new Derived('example');
+otherExample = new Derived('other-example');
+Derived.staticMethod();
+example.instanceMethod();
+otherExample.instanceMethod();

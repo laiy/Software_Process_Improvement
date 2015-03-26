@@ -139,3 +139,4 @@ var addEventHandlerForAtplusButton = function() {
         bigButton.getElementsByTagName('span')[0].innerHTML = "";
     };
 };
+

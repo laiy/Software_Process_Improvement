@@ -1,5 +1,5 @@
 (function() {
-  var Button, addEventHandlerToBubble, addEventHandlerToButtons, addResetWhenLeavingApb, countResult, resetBubble;
+  var Button, addEventHandlerToBubble, addEventHandlerToButtons, addResetWhenLeavingApb, countResult, resetBubble, robot, robotClickingHandler;
 
   Button = (function() {
     Button.prototype.buttons = [];
@@ -90,14 +90,38 @@
       return $.get('/', (function(_this) {
         return function(data) {
           if (_this.disabled === false) {
-            _this.dom.find('.unread').text(data);
-            _this.disabled = true;
-            _this.dom.css('background-color', '#686868');
-            Button.prototype.enableButtons();
-            return Button.prototype.ifAllButtonsDoneThenEnableBubble();
+            if (_this.success()) {
+              _this.dom.find('.unread').text(data);
+              _this.disabled = true;
+              _this.dom.css('background-color', '#686868');
+              Button.prototype.enableButtons();
+              Button.prototype.ifAllButtonsDoneThenEnableBubble();
+              if (robot.state === 'working') {
+                return robot.clickNext();
+              }
+            }
           }
         };
       })(this));
+    };
+
+    Button.prototype.success = function() {
+      if (Math.random() > 0.3) {
+        this.showMessage(true);
+        return true;
+      } else {
+        this.showMessage(false);
+        this.getRandomNumberAndShow();
+        return false;
+      }
+    };
+
+    Button.prototype.showMessage = function(good) {
+      if (good) {
+        return console.log(("Button " + (this.dom.find('.button-id').text()) + " say: ") + this.goodMessages);
+      } else {
+        return console.log("Handle error from " + (this.dom.find('.button-id').text()) + " , message is: " + this.badMessages);
+      }
     };
 
     return Button;
@@ -105,12 +129,14 @@
   })();
 
   $(function() {
+    robot.init();
     addEventHandlerToButtons();
     addEventHandlerToBubble();
-    return addResetWhenLeavingApb();
+    addResetWhenLeavingApb();
+    return robotClickingHandler();
   });
 
-  addEventHandlerToButtons = function() {
+  addEventHandlerToButtons = function(next) {
     var badMessages, button, dom, goodMessages, i, j, len, ref, results;
     goodMessages = ['这是个天大的秘密', '我不知道', '你不知道', '他不知道', '才怪'];
     badMessages = ['这不是个天大的秘密', '我知道', '你知道', '他知道', '才不怪'];
@@ -118,7 +144,7 @@
     results = [];
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       dom = ref[i];
-      results.push(button = new Button($(dom, goodMessages[i], badMessages[i])));
+      results.push(button = new Button($(dom), goodMessages[i], badMessages[i]));
     }
     return results;
   };
@@ -151,7 +177,8 @@
   addResetWhenLeavingApb = function() {
     return $('div#button').on('mouseleave', function() {
       Button.prototype.resetAllButtons();
-      return resetBubble();
+      resetBubble();
+      return robot.reset();
     });
   };
 
@@ -161,6 +188,36 @@
     bubble.find('span').text('');
     bubble.attr('enabled', 'false');
     return bubble.css('background-color', '#686868');
+  };
+
+  robotClickingHandler = function() {
+    return $('.apb').click(function() {
+      robot.state = 'working';
+      return robot.clickNext();
+    });
+  };
+
+  robot = {
+    init: function() {
+      this.buttons = $('#control-ring .button');
+      this.order = ['A', 'B', 'C', 'D', 'E'];
+      this.currentIndex = 0;
+      return this.state = 'resting';
+    },
+    clickNext: function() {
+      if (this.currentIndex === this.order.length) {
+        return $('#info-bar').click();
+      } else {
+        return this.getNextButton().click();
+      }
+    },
+    getNextButton: function() {
+      return this.buttons[this.order[this.currentIndex++].charCodeAt() - 'A'.charCodeAt()];
+    },
+    reset: function() {
+      this.state = 'resting';
+      return this.currentIndex = 0;
+    }
   };
 
 }).call(this);

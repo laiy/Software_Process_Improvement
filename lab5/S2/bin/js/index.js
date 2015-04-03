@@ -192,8 +192,10 @@
 
   robotClickingHandler = function() {
     return $('.apb').click(function() {
-      robot.state = 'working';
-      return robot.clickNext();
+      if (robot.state === 'resting') {
+        robot.state = 'working';
+        return robot.clickNext();
+      }
     });
   };
 

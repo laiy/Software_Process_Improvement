@@ -111,8 +111,9 @@ resetBubble = ->
 
 robotClickingHandler = ->
     $('.apb').click ->
-        robot.state = 'working'
-        robot.clickNext()
+        if robot.state is 'resting'
+            robot.state = 'working'
+            robot.clickNext()
 
 robot =
     init: ->
